@@ -1,0 +1,23 @@
+.outer-loader{
+    width: 100%;
+    height: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+.spinner-loader{
+    height: 150px;
+    width: 150px;
+
+    background-image: url("../../public/loadingrec.png");
+    background-size: contain;
+    margin: auto;
+    animation: loading;
+    animation-duration: 1s;
+    animation-iteration-count: infinite;
+    animation-timing-function: linear;
+}
+@keyframes loading{
+    0%{transform: rotate(0deg);}
+    100%{transform: rotate(-359deg);}
+}

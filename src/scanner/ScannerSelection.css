@@ -1,0 +1,45 @@
+.scanner-selection{
+    width: 50%;
+    min-width: 200px;
+    max-width: 500px;
+    height: 50vh;
+    margin: auto;
+    margin-top: 12%;
+    display: flex;
+    justify-content: center;
+    align-items:center;
+    border-radius: 20px;
+}
+.scanner-selection .scanner-item{
+    display: block;
+    background-color: rgb(96, 235, 96);
+    border-radius: 5px;
+    border-color: rgb(17, 95, 17);
+    padding: 10px;
+    margin: 5px;
+    font: 200%;
+    box-shadow: 0 0 3px;
+    color: black;
+}
+.scanner-selection .scanner-item:hover{
+    cursor: pointer;
+    box-shadow: 0 0 6px;
+}
+
+.scanner-selection{
+    background-color: rgb(228, 228, 228);
+}
+.scanner-refresh{
+    display:block;
+    background-image: url("../..//public/refresh.png");
+    background-size: cover;
+    width: 50px;
+    height: 50px;
+    margin: auto;
+    margin-top: 10px;
+    flex: 1;
+    color: red;
+}
+.scanner-refresh:hover{
+    cursor:pointer;
+}
