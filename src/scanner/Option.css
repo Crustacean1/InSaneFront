@@ -1,5 +1,5 @@
 .option{
-    background-color: green;
+    background-color: rgb(175, 175, 175);
     padding: 5px;
     margin: 5px;
     border-radius: 5px;
@@ -24,4 +24,8 @@
 }
 .range-option .option-value{
     width: 10%;
+}
+
+.list-option select{
+    width: 65%;
 }

@@ -2,28 +2,28 @@
     width: 50%;
     min-width: 200px;
     max-width: 500px;
-    height: 50vh;
+    height: auto;
+    max-height: 50vh;
     margin: auto;
     margin-top: 12%;
     display: flex;
     justify-content: center;
     align-items:center;
     border-radius: 20px;
+    padding: 20px;
 }
 .scanner-selection .scanner-item{
+    box-sizing: border-box;
     display: block;
-    background-color: rgb(96, 235, 96);
+    background-color: rgb(127, 255, 53);
     border-radius: 5px;
     border-color: rgb(17, 95, 17);
     padding: 10px;
-    margin: 5px;
-    font: 200%;
-    box-shadow: 0 0 3px;
+    margin: 15px;
+    font-size: 110%;
     color: black;
-}
-.scanner-selection .scanner-item:hover{
-    cursor: pointer;
-    box-shadow: 0 0 6px;
+    width: 100%;
+    word-wrap: anywhere;
 }
 
 .scanner-selection{
@@ -35,11 +35,45 @@
     background-size: cover;
     width: 50px;
     height: 50px;
+    min-height: 50px;
     margin: auto;
     margin-top: 10px;
+    margin-bottom: 10px;
     flex: 1;
-    color: red;
+    background-color: rgb(85, 219, 85);
+    border-radius: 5px;
 }
 .scanner-refresh:hover{
     cursor:pointer;
+}
+
+.inner-scanner-list{
+    display: flex;
+    flex-flow: column nowrap;
+    max-height: 400px;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+}
+.inner-scanner-list span{
+    display: block;
+    flex: 1;
+}
+.scanner-panel header span.outer-progress-bar{
+    background-color: black;
+    display: block;
+    margin: auto;
+    margin-top: 10px;
+    margin-bottom: 10px;
+    width: 400px;
+    min-height: 20px;
+    border-radius: 10px;
+    padding: 0;
+}
+header span.inner-progress-bar{
+    border-radius: 10px;
+    min-height: 20px;
+    background-color: green;
+    padding: 0;
+    margin: 0;
 }

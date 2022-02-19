@@ -1,6 +1,6 @@
 import React from 'react';
 import './OptionList.css';
-import apiFetcher, { GetOptionDto } from '../api/Api';
+import { GetOptionDto } from '../api/Api';
 import GenericOption, { OptionProps } from './Option';
 
 interface OptionGroupDto {

@@ -17,7 +17,7 @@ interface GetOptionDto {
 
 interface ScanStatus {
     progress: number;
-    status: "Ready" | "Scanning" | "Complete" | "Failed";
+    status: "Ready" | "Scanning" | "Completed" | "Failed" | "Writing";
 }
 
 interface FetchOptions {
@@ -42,34 +42,38 @@ class Api {
         this.httpOk = 200;
     }
 
-    getOptions(selectedMethod: string, data:any): FetchOptions {
+    getOptions(selectedMethod: string, data: any): FetchOptions {
         return {
             method: selectedMethod,
             mode: "cors",
             cache: "no-cache",
             headers: { "Content-Type": "application/json" },
             redirect: "follow",
-            body: (data && Object.keys(data).length !== 0) ? JSON.stringify(data) : null 
+            body: (data && Object.keys(data).length !== 0) ? JSON.stringify(data) : null
         }
     }
 
-    fetchJsonFromApi(endpoint: string, method: string, reqBody: any = {}): Promise<object> {
-        return fetch(this.apiEndpoint + endpoint, this.getOptions(method,reqBody)).then(
-                (data) => {
-                    const jsonData = data.json();
-                    if (data.status != this.httpOk) {
-                        if ("details" in jsonData) {
-                            Promise.reject(jsonData);
-                        }
-                        Promise.reject({ "details": `Received code ${data.status} from api` });
+    getDownloadLink(scannerName: string): string {
+        return this.apiEndpoint + "/scan/" + encodeURIComponent(scannerName);
+    }
+
+    callApi(endpoint: string, method: string, reqBody: any = {}): Promise<object> {
+        return fetch(this.apiEndpoint + endpoint, this.getOptions(method, reqBody)).then(
+            (data) => {
+                const jsonData = data.json();
+                if (data.status !== this.httpOk) {
+                    if ("details" in jsonData) {
+                        Promise.reject(jsonData);
                     }
-                    return jsonData;
-                });
+                    Promise.reject({ "details": `Received code ${data.status} from api` });
+                }
+                return jsonData;
+            });
     }
 
     fetchScannerList(): Promise<string[]> {
-        return this.fetchJsonFromApi("/scanners/", "GET").
-            then((data: any) => {
+        return this.callApi("/scanners/", "GET")
+            .then((data: any) => {
                 if ("devices" in data) {
                     return data["devices"];
                 } else {
@@ -79,8 +83,8 @@ class Api {
     }
 
     refreshScannerList(): Promise<boolean> {
-        return this.fetchJsonFromApi("/scanners/", "POST").
-            then((data: any) => {
+        return this.callApi("/scanners/", "POST")
+            .then((data: any) => {
                 if ("status" in data) {
                     return data["status"] === "success";
                 }
@@ -89,8 +93,8 @@ class Api {
     }
 
     getScannerOptions(scannerName: string): Promise<GetOptionDto[]> {
-        return this.fetchJsonFromApi("/scanners/" + encodeURIComponent(scannerName), "GET").
-            then((data: any) => {
+        return this.callApi("/scanners/" + encodeURIComponent(scannerName), "GET")
+            .then((data: any) => {
                 if ("options" in data) {
                     return data;
                 }
@@ -98,9 +102,9 @@ class Api {
             })
     }
 
-    setScannerOption(scannerName: string, option: SetOptionDto): Promise<boolean> {
-        return this.fetchJsonFromApi("/scanners/" + encodeURIComponent(scannerName), "PUT", option).
-            then((data: any) => {
+    setScannerOption(scannerName: string, option: SetOptionDto | {}): Promise<boolean> {
+        return this.callApi("/scanners/" + encodeURIComponent(scannerName), "PUT", option)
+            .then((data: any) => {
                 if ("status" in data) {
                     return data["status"] === "success";
                 }
@@ -108,17 +112,17 @@ class Api {
             });
     }
 
-    startScanning(scannerName: string): Promise<ScanStatus> {
-        return this.fetchJsonFromApi("scan/" + encodeURIComponent(scannerName), "POST").
-            then((data: any) => {
-                if ("progress" in data && "status" in data) { return data as ScanStatus; }
+    startScanning(scannerName: string): Promise<boolean> {
+        return this.callApi("scan/" + encodeURIComponent(scannerName), "POST")
+            .then((data: any) => {
+                if ("status" in data) { return data["status"] === "success"; }
                 return Promise.reject("Invalid object received from api");
             });
     }
 
     getScanStatus(scannerName: string): Promise<ScanStatus> {
-        return this.fetchJsonFromApi("/scan/status/" + scannerName, "GET").
-            then((data: any) => {
+        return this.callApi("/scan/status/" + encodeURIComponent(scannerName), "GET")
+            .then((data: any) => {
                 if ("progress" in data && "status" in data) { return data as ScanStatus; }
                 return Promise.reject("Invalid object received from api");
             });

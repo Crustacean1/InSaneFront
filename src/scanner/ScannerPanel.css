@@ -1,5 +1,6 @@
 .scanner-panel{
     width: 100%;
+    max-width: 100%;
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -19,23 +20,32 @@
 
 .scanner-panel h1{
     display:inline-block;
+    word-wrap: anywhere;
+    max-width: 100%;
+}
+
+.active-element{
+    box-shadow: 0 0 3px;
+}
+.active-element:hover{
+    box-shadow: 0 0 6px;
+    cursor: pointer;
 }
 
 .scanner-panel header .scanner-exit{
     display: inline-block;
     width: 20px;
     height: 20px;
+    border-radius: 5px;
     background-color: red;
 }
-.scanner-exit:hover{
-    cursor: pointer;
-}
 
-.scanner-option-list{
+
+.option-list{
     display:flex;
     flex-direction: column;
     justify-content: center;
-    align-items: center;
+    align-items: flex-start;
 }
 
 .scanner-option .option-name{
@@ -63,14 +73,33 @@
     padding: 5px;
     margin: 5px;
     border-radius: 5px;
-    font: 400%;
+    font-size: 150%;
 }
-.scanner-commands span:hover{
-    cursor: pointer;
+
+.scanner-commands .option-reload{
+    background-color: rgb(147, 255, 85);
 }
+
 .scanner-commands .option-reset{
     background-color: rgb(255, 85, 85);
 }
+
 .scanner-commands .scan-start{
-    background-color: rgb(119, 72, 119);
+    background-color: rgb(121, 251, 255);
+}
+
+.outer-progress-bar{
+    position: relative; 
+}
+
+.scanner-panel header .progress-status{
+    position: absolute;
+    height: 20px;
+    width: 100px;
+    top: 50%;
+    left: 50%;
+    text-align: center;
+    color: white;
+    margin-left: -50px;
+    margin-top: -10px;
 }

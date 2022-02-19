@@ -11,10 +11,19 @@ interface OptionProps {
 function ListOption(props: { option: OptionProps }) {
     let key: number = 0;
     const option = props.option.optionDto;
+    let setOption = (value: string) => {
+        apiFetcher.setScannerOption(props.option.scannerName,
+            { "optionId": parseInt(option.optionId, 10), "value": value }).
+            then((success) => {
+                if (!success) { console.log("Failed to fetch option"); }
+                props.option.optionChangeCallback();
+            })
+    }
+
     return <div className="option list-option">
         <div className="option list-option option-head">
             <span className="option-title">{option.title}</span>
-            <select>
+            <select onChange={(e) => { setOption(e.currentTarget.value) }} value={option.value}>
                 {option["value_range"].map((x) => (<option key={key++} value={x}>{x}</option>))}
             </select></div>
         <div className="option-desc">
@@ -32,12 +41,10 @@ function RangeOption(props: { option: OptionProps }) {
     let [value, setValue] = useState(parseInt(option.value, 10));
 
     useEffect(() => {
-        if (value === Number.NaN) {
-            setValue(parseInt(option.value, 10));
-        }
-    })
+        setValue(parseInt(option.value, 10));
+    }, [props.option.optionDto.value])
 
-    let optionChange = (newValue: string) => {
+    let setOption = (newValue: string) => {
         apiFetcher.setScannerOption(props.option.scannerName, { optionId: parseInt(option.optionId, 10), value: newValue }).
             then((result: boolean) => {
                 setValue(Number.NaN);
@@ -48,10 +55,8 @@ function RangeOption(props: { option: OptionProps }) {
 
     let rangeInput = (<input type="range" min={minVal} max={maxVal}
         value={isDisabled ? "" : (Number.isNaN(value) ? option.value : value)} disabled={isDisabled}
-        onPointerUp={(e) => { optionChange(e.currentTarget.value) }}
+        onPointerUp={(e) => { setOption(e.currentTarget.value) }}
         onChange={(e) => { setValue(parseInt(e.currentTarget.value, 10)) }} />)
-
-    console.log("Val: " + value);
 
     return <div className="option range-option">
         <div className="option-head">
