@@ -10,7 +10,8 @@ function ProgressBar(props: { scanStatus: ScanStatus }) {
         "Scanning": "black",
         "Completed": "blue",
         "Failed": "red",
-        "Writing": "brown"
+        "Writing": "brown",
+        "Initializing" : "grey"
     }
     const innerBar = props.scanStatus.status === "Scanning";
     return <span className="outer-progress-bar" style={{ "backgroundColor": `${colorMap[props.scanStatus.status]}` }}>
@@ -20,28 +21,28 @@ function ProgressBar(props: { scanStatus: ScanStatus }) {
     </span >
 }
 
+function handleError(error: Error) {
+    alert(error.name + " : " + error.message);
+}
+
 function ScannerPanel(props: { scannerName: string, resetScannerName: () => void }) {
 
     let [options, setOptions] = useState<GetOptionDto[]>([]);
     let [loaded, setLoaded] = useState<boolean>(false);
     let [scanStatus, setScanStatus] = useState<ScanStatus>({ "progress": 0, "status": "Ready" });
-    let [refreshHandler, setRefreshHandler] = useState<number>(0);
-    const progressCheckTimeout = 2000;//in ms
-
-    let cleanupHandler = () => { clearTimeout(refreshHandler); }
+    const progressCheckTimeout = 1000;//in ms
 
     useEffect(() => {
         if (!loaded) {
             optionChangeCallback();
             progressCheckCallback();
         }
-        return cleanupHandler;
-    });
+    },[props.scannerName]);
 
     let optionChangeCallback = () => {
         apiFetcher.getScannerOptions(props.scannerName)
             .then((data: any) => { setOptions(data["options"]); setLoaded(true); },
-                (error) => { alert("Couldn't fetch scanner options: " + error) })
+                (error) => { handleError(error); })
     }
 
     let optionsReset = () => {
@@ -50,7 +51,7 @@ function ScannerPanel(props: { scannerName: string, resetScannerName: () => void
             .then((success) => {
                 if (!success) { console.log("Failed to reset options: " + success) }
                 optionChangeCallback();
-            });
+            }, (error) => { handleError(error); });
     }
 
     let progressCheckCallback = () => {
@@ -63,12 +64,11 @@ function ScannerPanel(props: { scannerName: string, resetScannerName: () => void
                             newTab.focus();
                         }
                         break;
-                    case "Scanning":
-                        setTimeout(progressCheckCallback, progressCheckTimeout);
-                        break;
                     case "Failed":
                         alert("Scanner couldn't scan image, try again later");
                         break;
+                    case "Initializing":
+                    case "Scanning":
                     case "Writing":
                         setTimeout(progressCheckCallback, progressCheckTimeout);
                         break;
@@ -83,6 +83,8 @@ function ScannerPanel(props: { scannerName: string, resetScannerName: () => void
             .then((success) => {
                 if (!success) { alert("Couldn't start scanning"); return; }
                 progressCheckCallback();
+            }, (error) => {
+                handleError(error);
             })
     }
 

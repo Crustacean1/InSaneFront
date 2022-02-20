@@ -17,7 +17,7 @@ interface GetOptionDto {
 
 interface ScanStatus {
     progress: number;
-    status: "Ready" | "Scanning" | "Completed" | "Failed" | "Writing";
+    status: "Ready" | "Scanning" | "Completed" | "Failed" | "Writing" | "Initializing";
 }
 
 interface FetchOptions {
