@@ -53,6 +53,9 @@ function ScannerPanel(props: { scannerName: string, resetScannerName: () => void
                 optionChangeCallback();
             }, (error) => { handleError(error); });
     }
+    let refreshScanStatus = () =>{
+        setTimeout(progressCheckCallback,progressCheckTimeout);
+    }
 
     let progressCheckCallback = () => {
         apiFetcher.getScanStatus(props.scannerName)
@@ -70,7 +73,7 @@ function ScannerPanel(props: { scannerName: string, resetScannerName: () => void
                     case "Initializing":
                     case "Scanning":
                     case "Writing":
-                        setTimeout(progressCheckCallback, progressCheckTimeout);
+                        refreshScanStatus();
                         break;
                     default:
                 }

@@ -113,7 +113,7 @@ class Api {
     }
 
     startScanning(scannerName: string): Promise<boolean> {
-        return this.callApi("scan/" + encodeURIComponent(scannerName), "POST")
+        return this.callApi("/scan/" + encodeURIComponent(scannerName), "POST")
             .then((data: any) => {
                 if ("status" in data) { return data["status"] === "success"; }
                 return Promise.reject("Invalid object received from api");
