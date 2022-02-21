@@ -13,8 +13,8 @@ function ListOption(props: { option: OptionProps }) {
     const option = props.option.optionDto;
     let setOption = (value: string) => {
         apiFetcher.setScannerOption(props.option.scannerName,
-            { "optionId": parseInt(option.optionId, 10), "value": value }).
-            then((success) => {
+            { "optionId": parseInt(option.optionId, 10), "value": value })
+            .then((success) => {
                 if (!success) { console.log("Failed to fetch option"); }
                 props.option.optionChangeCallback();
             })
@@ -42,11 +42,11 @@ function RangeOption(props: { option: OptionProps }) {
 
     useEffect(() => {
         setValue(parseInt(option.value, 10));
-    }, [props.option.optionDto.value])
+    }, [option.value])
 
     let setOption = (newValue: string) => {
-        apiFetcher.setScannerOption(props.option.scannerName, { optionId: parseInt(option.optionId, 10), value: newValue }).
-            then((result: boolean) => {
+        apiFetcher.setScannerOption(props.option.scannerName, { optionId: parseInt(option.optionId, 10), value: newValue })
+            .then((result: boolean) => {
                 setValue(Number.NaN);
                 if (!result) { console.log("Failed to set option") }
                 props.option.optionChangeCallback();

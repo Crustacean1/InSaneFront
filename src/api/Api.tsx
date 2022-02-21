@@ -36,7 +36,7 @@ class Api {
     constructor() {
         const envApiEndpoint = process.env.REACT_APP_API_ENDPOINT;
         if (!envApiEndpoint) {
-            throw "Failed to specify endpoint url (did you forget to set 'REACT_APP_API_ENDPOINT'?";
+            throw new Error("Failed to specify endpoint url (did you forget to set 'REACT_APP_API_ENDPOINT'?");
         }
         this.apiEndpoint = envApiEndpoint;
         this.httpOk = 200;

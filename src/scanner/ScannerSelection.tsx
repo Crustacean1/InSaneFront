@@ -50,15 +50,15 @@ function ScannerSelection(props: ScannerSelectionProps) {
     }
 
     useEffect(() => {
-        if (scannerList.loaded === "unloaded"){
+        if (scannerList.loaded === "unloaded") {
             fetchScanners();
         }
     }, [scannerList]);
 
     let refreshCallback = () => {
         setScannerList({ scanners: [], loaded: "refreshing" });
-        apiFetcher.refreshScannerList().
-            then(() => {
+        apiFetcher.refreshScannerList()
+            .then(() => {
                 setScannerList({ scanners: [], loaded: "unloaded" });
             }, (error: string) => { handleError(error) });
     }

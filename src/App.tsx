@@ -1,5 +1,4 @@
 import React, {useState} from 'react';
-import logo from './logo.svg';
 import './App.css';
 import ScannerSelection from './scanner/ScannerSelection';
 import ScannerPanel from './scanner/ScannerPanel';

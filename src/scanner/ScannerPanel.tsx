@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import './ScannerPanel.css';
 import apiFetcher, { GetOptionDto, ScanStatus } from "../api/Api";
 import OptionList from './OptionList';
@@ -11,7 +11,7 @@ function ProgressBar(props: { scanStatus: ScanStatus }) {
         "Completed": "blue",
         "Failed": "red",
         "Writing": "brown",
-        "Initializing" : "grey"
+        "Initializing": "grey"
     }
     const innerBar = props.scanStatus.status === "Scanning";
     return <span className="outer-progress-bar" style={{ "backgroundColor": `${colorMap[props.scanStatus.status]}` }}>
@@ -30,20 +30,15 @@ function ScannerPanel(props: { scannerName: string, resetScannerName: () => void
     let [options, setOptions] = useState<GetOptionDto[]>([]);
     let [loaded, setLoaded] = useState<boolean>(false);
     let [scanStatus, setScanStatus] = useState<ScanStatus>({ "progress": 0, "status": "Ready" });
+    let [progressCallback, setProgressCallback] = useState<ReturnType<typeof setTimeout>>();
     const progressCheckTimeout = 1000;//in ms
 
-    useEffect(() => {
-        if (!loaded) {
-            optionChangeCallback();
-            progressCheckCallback();
-        }
-    },[props.scannerName]);
 
-    let optionChangeCallback = () => {
+    let optionChangeCallback = useCallback(() => {
         apiFetcher.getScannerOptions(props.scannerName)
             .then((data: any) => { setOptions(data["options"]); setLoaded(true); },
                 (error) => { handleError(error); })
-    }
+    },[props.scannerName]);
 
     let optionsReset = () => {
         setLoaded(false);
@@ -53,22 +48,30 @@ function ScannerPanel(props: { scannerName: string, resetScannerName: () => void
                 optionChangeCallback();
             }, (error) => { handleError(error); });
     }
-    let refreshScanStatus = () =>{
-        setTimeout(progressCheckCallback,progressCheckTimeout);
-    }
 
-    let progressCheckCallback = () => {
+
+    let progressCheckCallback = useCallback(() => {
+        let refreshScanStatus = () => {
+            let handle = setTimeout(progressCheckCallback, progressCheckTimeout);
+            setProgressCallback(handle);
+        };
+        let downloadScan = () => {
+            let newTab = window.open(apiFetcher.getDownloadLink(props.scannerName) + "/scan", '_blank');
+            if (newTab) {
+                newTab.focus();
+            }
+        }
+        let handleScanError = () => {
+            alert("Scanner couldn't scan image, try again later");
+        }
         apiFetcher.getScanStatus(props.scannerName)
             .then((status) => {
                 switch (status.status) {
                     case "Completed":
-                        let newTab = window.open(apiFetcher.getDownloadLink(props.scannerName) + "/scan", '_blank');
-                        if (newTab) {
-                            newTab.focus();
-                        }
+                        downloadScan();
                         break;
                     case "Failed":
-                        alert("Scanner couldn't scan image, try again later");
+                        handleScanError();
                         break;
                     case "Initializing":
                     case "Scanning":
@@ -79,7 +82,7 @@ function ScannerPanel(props: { scannerName: string, resetScannerName: () => void
                 }
                 setScanStatus(status);
             })
-    }
+    }, [props.scannerName]);
 
     let startScanning = () => {
         apiFetcher.startScanning(props.scannerName)
@@ -90,6 +93,14 @@ function ScannerPanel(props: { scannerName: string, resetScannerName: () => void
                 handleError(error);
             })
     }
+
+    useEffect(() => {
+        if (!loaded) {
+            optionChangeCallback();
+            progressCheckCallback();
+        }
+        return () => { if (progressCallback) { clearTimeout(progressCallback); } }
+    }, [loaded,optionChangeCallback,progressCheckCallback,progressCallback]);
 
     return (<div className="scanner-panel">
         <header>
