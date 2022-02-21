@@ -85,7 +85,11 @@
 }
 
 .scanner-commands .scan-start{
-    background-color: rgb(121, 251, 255);
+    background-color: rgb(172, 121, 255);
+}
+
+.scanner-commands .previous-scan{
+    background-color: rgb(232, 235, 76);
 }
 
 .outer-progress-bar{

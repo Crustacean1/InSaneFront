@@ -25,6 +25,13 @@ function handleError(error: Error) {
     alert(error.name + " : " + error.message);
 }
 
+function downloadScan(link: string) {
+    let newTab = window.open(apiFetcher.getDownloadLink(link) + "/scan", '_blank');
+    if (newTab) {
+        newTab.focus();
+    }
+}
+
 function ScannerPanel(props: { scannerName: string, resetScannerName: () => void }) {
 
     let [options, setOptions] = useState<GetOptionDto[]>([]);
@@ -38,7 +45,7 @@ function ScannerPanel(props: { scannerName: string, resetScannerName: () => void
         apiFetcher.getScannerOptions(props.scannerName)
             .then((data: any) => { setOptions(data["options"]); setLoaded(true); },
                 (error) => { handleError(error); })
-    },[props.scannerName]);
+    }, [props.scannerName]);
 
     let optionsReset = () => {
         setLoaded(false);
@@ -55,12 +62,6 @@ function ScannerPanel(props: { scannerName: string, resetScannerName: () => void
             let handle = setTimeout(progressCheckCallback, progressCheckTimeout);
             setProgressCallback(handle);
         };
-        let downloadScan = () => {
-            let newTab = window.open(apiFetcher.getDownloadLink(props.scannerName) + "/scan", '_blank');
-            if (newTab) {
-                newTab.focus();
-            }
-        }
         let handleScanError = () => {
             alert("Scanner couldn't scan image, try again later");
         }
@@ -68,7 +69,7 @@ function ScannerPanel(props: { scannerName: string, resetScannerName: () => void
             .then((status) => {
                 switch (status.status) {
                     case "Completed":
-                        downloadScan();
+                        downloadScan(props.scannerName);
                         break;
                     case "Failed":
                         handleScanError();
@@ -100,7 +101,7 @@ function ScannerPanel(props: { scannerName: string, resetScannerName: () => void
             progressCheckCallback();
         }
         return () => { if (progressCallback) { clearTimeout(progressCallback); } }
-    }, [loaded,optionChangeCallback,progressCheckCallback,progressCallback]);
+    }, [loaded, optionChangeCallback, progressCheckCallback, progressCallback]);
 
     return (<div className="scanner-panel">
         <header>
@@ -109,6 +110,7 @@ function ScannerPanel(props: { scannerName: string, resetScannerName: () => void
             <ProgressBar scanStatus={scanStatus} />
             <div className="scanner-commands">
                 <span className="option-reload active-element" onClick={() => { setLoaded(false); optionChangeCallback() }}>Reload</span>
+                <span className="previous-scan active-element" onClick={() => { downloadScan(props.scannerName); }}>Previous</span>
                 <span className="scan-start active-element" onClick={startScanning}>Scan</span>
                 <span className="option-reset active-element" onClick={optionsReset}>Reset</span>
             </div>
